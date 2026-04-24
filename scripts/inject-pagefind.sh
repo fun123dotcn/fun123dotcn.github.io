@@ -14,7 +14,7 @@ echo "=== Step 2: Injecting search into HTML files ==="
 python3 - "$SITE_DIR" << 'PYEOF'
 import sys, os, glob
 
-SITE_DIR = sys.argv[1] if len(sys.argv) > 1 else "static_site"
+SITE_DIR = "."
 
 INJECT_STYLE = """<style>
 /* Hide Mintlify search modal */
