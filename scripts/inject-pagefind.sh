@@ -24,7 +24,7 @@ div[role="dialog"][data-state="open"],
 [data-radix-portal] > div[role="dialog"] {
   display: none !important;
 }
-/* Logo subtitle - inline */
+/* Logo subtitle - force inline on same line */
 .nav-subtitle {
   font-size: 12px;
   color: #6b7280;
@@ -32,15 +32,26 @@ div[role="dialog"][data-state="open"],
   white-space: nowrap;
   font-weight: 500;
   letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
+  display: inline !important;
   vertical-align: middle;
+  line-height: 28px;
 }
 .nav-subtitle::before {
   content: "|";
   margin-right: 8px;
   color: #d1d5db;
+}
+/* Ensure logo link allows inline children */
+a:has(img.nav-logo) {
+  display: inline-flex !important;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+/* Make logo images inline */
+img.nav-logo {
+  display: inline-block !important;
+  vertical-align: middle;
 }
 :root[data-page-mode="dark"] .nav-subtitle {
   color: #9ca3af;
@@ -135,16 +146,16 @@ INJECT_SCRIPT = """<script>
     setInterval(hijackBtns, 3000);
   };
   document.body.appendChild(scr);
-  /* Add subtitle after logo */
+  /* Add subtitle after logo - insert after the <a> tag, not inside */
   function addSubtitle() {
     var logos = document.querySelectorAll("img.nav-logo");
     logos.forEach(function(logo) {
-      var parent = logo.closest("a") || logo.parentElement;
-      if (parent && !parent.querySelector(".nav-subtitle")) {
+      var link = logo.closest("a");
+      if (link && !link.nextElementSibling?.classList?.contains("nav-subtitle")) {
         var sub = document.createElement("span");
         sub.className = "nav-subtitle";
         sub.textContent = "AI\u8F85\u52A9\u7F16\u7A0B\u7814\u7A76";
-        parent.appendChild(sub);
+        link.parentNode.insertBefore(sub, link.nextSibling);
       }
     });
   }
