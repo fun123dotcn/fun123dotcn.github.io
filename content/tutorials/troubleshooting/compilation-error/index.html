@@ -17,6 +17,22 @@ div[role="dialog"][data-state="open"],
 [data-radix-portal] > div[role="dialog"] {
   display: none !important;
 }
+/* Logo subtitle */
+.nav-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 10px;
+  white-space: nowrap;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-left: 1px solid #d1d5db;
+  padding-left: 10px;
+  line-height: 28px;
+}
+:root[data-page-mode="dark"] .nav-subtitle {
+  color: #9ca3af;
+  border-left-color: #4b5563;
+}
 </style></head><body><div hidden=""><!--$--><!--/$--></div><script>((a,b,c,d,e,f,g,h)=>{let i=document.documentElement,j=["light","dark"];function k(b){var c;(Array.isArray(a)?a:[a]).forEach(a=>{let c="class"===a,d=c&&f?e.map(a=>f[a]||a):e;c?(i.classList.remove(...d),i.classList.add(f&&f[b]?f[b]:b)):i.setAttribute(a,b)}),c=b,h&&j.includes(c)&&(i.style.colorScheme=c)}if(d)k(d);else try{let a=localStorage.getItem(b)||c,d=g&&"system"===a?window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light":a;k(d)}catch(a){}})("class","isDarkMode","system",null,["dark","light","true","false","system"],{"true":"dark","false":"light","dark":"dark","light":"light"},true,true)</script><style>:root{--banner-height:0px!important}</style><script>(self.__next_s=self.__next_s||[]).push([0,{"children":"(function j(a,b,c,d,e){try{let f,g,h=[];try{h=window.location.pathname.split(\"/\").filter(a=>\"\"!==a&&\"global\"!==a).slice(0,2)}catch{h=[]}let i=h.find(a=>c.includes(a)),j=[];for(let c of(i?j.push(i):j.push(b),j.push(\"global\"),j)){if(!c)continue;let b=a[c];if(b?.content){f=b.content,g=c;break}}if(!f)return void document.documentElement.setAttribute(d,\"hidden\");let k=!0,l=0;for(;l<localStorage.length;){let a=localStorage.key(l);if(l++,!a?.endsWith(e))continue;let b=localStorage.getItem(a);if(b&&b===f){k=!1;break}g&&(a.startsWith(`lang:${g}_`)||!a.startsWith(\"lang:\"))&&(localStorage.removeItem(a),l--)}document.documentElement.setAttribute(d,k?\"visible\":\"hidden\")}catch(a){console.error(a),document.documentElement.setAttribute(d,\"hidden\")}})(\n  {},\n  \"en\",\n  [],\n  \"data-banner-state\",\n  \"bannerDismissed\",\n)","id":"_mintlify-banner-script"}])</script><link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&amp;display=swap" rel="stylesheet"/><style>:root {
   --font-family-headings-custom: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   
@@ -460,5 +476,20 @@ div[role="dialog"][data-state="open"],
     setInterval(hijackBtns, 3000);
   };
   document.body.appendChild(scr);
+  /* Add subtitle after logo */
+  function addSubtitle() {
+    var logos = document.querySelectorAll("img.nav-logo");
+    logos.forEach(function(logo) {
+      var parent = logo.closest("a") || logo.parentElement;
+      if (parent && !parent.querySelector(".nav-subtitle")) {
+        var sub = document.createElement("span");
+        sub.className = "nav-subtitle";
+        sub.textContent = "AI辅助编程研究";
+        parent.appendChild(sub);
+      }
+    });
+  }
+  addSubtitle();
+  setInterval(addSubtitle, 3000);
 })();
 </script></body></html>

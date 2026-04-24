@@ -24,6 +24,22 @@ div[role="dialog"][data-state="open"],
 [data-radix-portal] > div[role="dialog"] {
   display: none !important;
 }
+/* Logo subtitle */
+.nav-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: 10px;
+  white-space: nowrap;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-left: 1px solid #d1d5db;
+  padding-left: 10px;
+  line-height: 28px;
+}
+:root[data-page-mode="dark"] .nav-subtitle {
+  color: #9ca3af;
+  border-left-color: #4b5563;
+}
 </style>"""
 
 INJECT_SCRIPT = """<script>
@@ -111,6 +127,21 @@ INJECT_SCRIPT = """<script>
     setInterval(hijackBtns, 3000);
   };
   document.body.appendChild(scr);
+  /* Add subtitle after logo */
+  function addSubtitle() {
+    var logos = document.querySelectorAll("img.nav-logo");
+    logos.forEach(function(logo) {
+      var parent = logo.closest("a") || logo.parentElement;
+      if (parent && !parent.querySelector(".nav-subtitle")) {
+        var sub = document.createElement("span");
+        sub.className = "nav-subtitle";
+        sub.textContent = "AI\u8F85\u52A9\u7F16\u7A0B\u7814\u7A76";
+        parent.appendChild(sub);
+      }
+    });
+  }
+  addSubtitle();
+  setInterval(addSubtitle, 3000);
 })();
 </script>"""
 
