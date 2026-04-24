@@ -41,18 +41,17 @@ div[role="dialog"][data-state="open"],
   margin-right: 8px;
   color: #d1d5db;
 }
-/* Ensure logo link allows inline children */
+/* Ensure logo link and subtitle are on same line */
+.flex.items-center:has(img.nav-logo) {
+  flex-wrap: nowrap !important;
+}
 a:has(img.nav-logo) {
   display: inline-flex !important;
   align-items: center;
   flex-wrap: nowrap;
   white-space: nowrap;
 }
-/* Make logo images inline */
-img.nav-logo {
-  display: inline-block !important;
-  vertical-align: middle;
-}
+/* DO NOT override img.nav-logo display — preserve Tailwind light/dark switching */
 :root[data-page-mode="dark"] .nav-subtitle {
   color: #9ca3af;
 }
