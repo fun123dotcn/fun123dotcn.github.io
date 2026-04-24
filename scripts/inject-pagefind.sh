@@ -24,21 +24,29 @@ div[role="dialog"][data-state="open"],
 [data-radix-portal] > div[role="dialog"] {
   display: none !important;
 }
-/* Logo subtitle */
+/* Logo subtitle - inline */
 .nav-subtitle {
   font-size: 12px;
   color: #6b7280;
-  margin-left: 10px;
+  margin-left: 8px;
   white-space: nowrap;
   font-weight: 500;
   letter-spacing: 0.02em;
-  border-left: 1px solid #d1d5db;
-  padding-left: 10px;
-  line-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  vertical-align: middle;
+}
+.nav-subtitle::before {
+  content: "|";
+  margin-right: 8px;
+  color: #d1d5db;
 }
 :root[data-page-mode="dark"] .nav-subtitle {
   color: #9ca3af;
-  border-left-color: #4b5563;
+}
+:root[data-page-mode="dark"] .nav-subtitle::before {
+  color: #4b5563;
 }
 </style>"""
 
