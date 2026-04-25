@@ -86,12 +86,13 @@ INJECT_SCRIPT = """<script>
   }
   /* Intercept search clicks at document capture phase (works with React SPA) */
   document.addEventListener("click", function(e) {
-    if (window.__pfOpen) { e.stopImmediatePropagation(); return; }
     var t = e.target;
     var btn = t.closest("#search-bar-entry, #search-bar-entry-mobile, button[aria-label='Open search']");
+    console.log("[Pagefind] click target:", t.tagName, t.className, t.id, "| btn:", btn ? btn.id + " " + btn.tagName : "none");
     if (btn) {
       e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
       openSearch();
+      console.log("[Pagefind] search opened");
     }
   }, true);
   document.addEventListener("keydown", function(e) {
