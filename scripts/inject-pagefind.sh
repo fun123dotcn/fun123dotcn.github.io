@@ -65,6 +65,11 @@ div:has(> a[href*="mintlify"]) {
 :root[data-page-mode="dark"] .nav-subtitle::before {
   color: #4b5563;
 }
+/* Back to top floating button */
+#back-to-top { display:none; position:fixed; bottom:24px; right:24px; z-index:9999; width:44px; height:44px; border-radius:50%; background:#2563eb; color:white; border:none; cursor:pointer; font-size:18px; box-shadow:0 4px 12px rgba(0,0,0,.15); transition:opacity .3s; opacity:.85; }
+#back-to-top:hover { opacity:1; }
+/* Hide Mintlify search modal */
+div[role="dialog"], [data-radix-popper-content-wrapper] { display: none !important; }
 </style>"""
 
 INJECT_SCRIPT = """<script>
@@ -142,6 +147,13 @@ INJECT_SCRIPT = """<script>
     /* Search buttons handled by capture-phase listener above */
   };
   document.body.appendChild(scr);
+  /* Back to top button */
+  document.body.insertAdjacentHTML('beforeend', '<button id="back-to-top" aria-label="返回顶部" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>');
+  window.addEventListener('scroll', function() {
+    var b = document.getElementById('back-to-top');
+    if (b) b.style.display = window.scrollY > 200 ? 'block' : 'none';
+  }, { passive: true });
+
   /* Add subtitle after logo - insert after the <a> tag, not inside */
   function addSubtitle() {
     var logos = document.querySelectorAll("img.nav-logo");
