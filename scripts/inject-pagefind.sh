@@ -167,6 +167,22 @@ INJECT_SCRIPT = """<script>
   }
   addSubtitle();
   setInterval(addSubtitle, 3000);
+  /* Sidebar "文档中心" tab → navigate to root */
+  function hijackSidebarTab() {
+    document.querySelectorAll('nav button, nav a, [role="tablist"] button, [role="tablist"] a').forEach(function(el) {
+      if (el.dataset.tabRoot) return;
+      if (el.textContent.trim().indexOf('\u6587\u6863\u4E2D\u5FC3') !== -1) {
+        el.dataset.tabRoot = "1";
+        el.style.cursor = "pointer";
+        el.addEventListener("click", function(e) {
+          e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+          window.location.href = "/";
+        }, true);
+      }
+    });
+  }
+  hijackSidebarTab();
+  setInterval(hijackSidebarTab, 3000);
 })();
 </script>"""
 
