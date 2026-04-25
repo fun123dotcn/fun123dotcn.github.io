@@ -52,6 +52,13 @@ a:has(img.nav-logo) {
   white-space: nowrap;
 }
 /* DO NOT override img.nav-logo display — preserve Tailwind light/dark switching */
+/* Hide "Powered by Mintlify" footer */
+a[href*="mintlify.com"],
+a[href*="mintlify.com"] *,
+footer a[href*="mintlify"],
+div:has(> a[href*="mintlify"]) {
+  display: none !important;
+}
 :root[data-page-mode="dark"] .nav-subtitle {
   color: #9ca3af;
 }
