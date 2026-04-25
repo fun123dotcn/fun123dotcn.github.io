@@ -84,9 +84,15 @@ INJECT_SCRIPT = """<script>
     var o = document.getElementById("pf-overlay");
     if (o) o.style.display = "none";
   }
-  /* Block Mintlify search with capture phase */
+  /* Intercept search clicks at document capture phase (works with React SPA) */
   document.addEventListener("click", function(e) {
-    if (window.__pfOpen) { e.stopImmediatePropagation(); }
+    if (window.__pfOpen) { e.stopImmediatePropagation(); return; }
+    var t = e.target;
+    var btn = t.closest("#search-bar-entry, #search-bar-entry-mobile, button[aria-label='Open search']");
+    if (btn) {
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      openSearch();
+    }
   }, true);
   document.addEventListener("keydown", function(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -132,24 +138,7 @@ INJECT_SCRIPT = """<script>
     document.body.appendChild(ov);
     try { new PagefindUI({ element: "#pf-container", showImages: false }); } catch(e) {}
     ov.addEventListener("click", function(e) { if (e.target === ov) closeSearch(); });
-    function hijackBtns() {
-      var sels = ["#search-bar-entry", "#search-bar-entry-mobile", "button[aria-label=\\"Open search\\"]"];
-      sels.forEach(function(sel) {
-        document.querySelectorAll(sel).forEach(function(btn) {
-          if (btn.dataset.pfBound) return;
-          btn.dataset.pfBound = "1";
-          var nb = btn.cloneNode(true);
-          nb.dataset.pfBound = "1";
-          btn.parentNode.replaceChild(nb, btn);
-          nb.addEventListener("click", function(e) {
-            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-            openSearch();
-          }, true);
-        });
-      });
-    }
-    hijackBtns();
-    setInterval(hijackBtns, 3000);
+    /* Search buttons handled by capture-phase listener above */
   };
   document.body.appendChild(scr);
   /* Add subtitle after logo - insert after the <a> tag, not inside */
