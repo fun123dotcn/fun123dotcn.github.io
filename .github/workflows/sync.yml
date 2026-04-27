@@ -22,7 +22,7 @@ jobs:
         run: |
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq ".workflow_runs[0].id")
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq ".artifacts[0].id")
-          gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip -o artifact.zip
+          gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip --output artifact.zip
           unzip -q artifact.zip -d static_site
           
       - name: Fix paths for root domain
