@@ -10,6 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: fun123dotcn/fun123dotcn.github.io
+      
+      - uses: actions/checkout@v4
+        with:
+          repository: fun123dotcn/ai2-docs
+          path: ai2-docs-repo
+          sparse-checkout: scripts
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Download ai2-docs artifact
         env:
@@ -20,6 +32,18 @@ jobs:
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
           rm -rf artifact.tar static_site
           unzip -o artifact.zip
+
+      - name: Run inject-pagefind.sh
+        run: |
+          chmod +x ai2-docs-repo/scripts/inject-pagefind.sh
+          cd ai2-docs-repo/scripts
+          # 获取正确的站点目录
+          if [ -d "../../static_site" ]; then
+            ./inject-pagefind.sh ../../static_site
+          elif [ -d "../../_next" ]; then
+            # artifact解压后直接在根目录
+            ./inject-pagefind.sh ../..
+          fi
 
       - name: Fix paths for root domain
         run: |
@@ -32,16 +56,21 @@ jobs:
           cp -r _next_static/* _next/ 2>/dev/null || true
           cp -r content_static/* content/ 2>/dev/null || true
           cp -r pagefind_static/* pagefind/ 2>/dev/null || true
+          cp -r static_site/pagefind/* pagefind/ 2>/dev/null || true
           cp -f _next_static/favicon.ico . 2>/dev/null || true
           cp -f _next_static/logo.png . 2>/dev/null || true
           cp -f _next_static/*.ico . 2>/dev/null || true
           cp -f _next_static/*.png . 2>/dev/null || true
           cp -f _next_static/*.css . 2>/dev/null || true
           cp -f index.html . 2>/dev/null || true
+          cp -f static_site/index.html . 2>/dev/null || true
+          cp -f static_site/*.html . 2>/dev/null || true
+          cp -rf static_site/_next/* _next/ 2>/dev/null || true
+          cp -rf static_site/content/* content/ 2>/dev/null || true
           touch .nojekyll
-          rm -rf artifact.zip artifact.tar static_site _next_static content_static pagefind_static
+          rm -rf artifact.zip artifact.tar static_site _next_static content_static pagefind_static ai2-docs-repo
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'Sync from ai2-docs build' || echo 'No changes'
+          git commit -m 'Sync from ai2-docs with inject' || echo 'No changes'
           git push origin main
