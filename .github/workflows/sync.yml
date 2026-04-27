@@ -18,15 +18,14 @@ jobs:
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq '.workflow_runs[0].id')
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq '.artifacts[0].id')
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
-          rm -rf static_site artifact.tar
-          unzip -o artifact.zip -d static_site
+          rm -rf artifact.tar static_site
+          unzip -o artifact.zip
+          tar -xf artifact.tar
 
       - name: Fix paths for root domain
         run: |
-          for f in static_site/*.html; do
-            sed -i 's|href="/ai2-docs/|href="/|g' "$f"
-            sed -i 's|src="/ai2-docs/|src="/|g' "$f"
-          done
+          find static_site -name "*.html" -type f -exec sed -i 's|href="/ai2-docs/|href="/|g' {} \;
+          find static_site -name "*.html" -type f -exec sed -i 's|src="/ai2-docs/|src="/|g' {} \;
 
       - name: Commit and push
         run: |
