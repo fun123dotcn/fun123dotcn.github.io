@@ -1,0 +1,51 @@
+name: Sync from ai2-docs
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            favicon.ico
+            logo.png
+            .nojekyll
+          sparse-checkout-cone-mode: false
+          
+      - name: Get latest ai2-docs build
+        run: |
+          gh api repos/fun123dotcn/ai2-docs/actions/runs \
+            --jq ".workflow_runs[0].id" > run_id.txt
+          RUN_ID=$(cat run_id.txt)
+          ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts \
+            --jq ".artifacts[0].id")
+          gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip -o artifact.zip
+          unzip -q artifact.zip -d static_site
+          
+      - name: Fix paths for root domain
+        run: |
+          find static_site -name "*.html" -exec sed -i "s|href=\"/ai2-docs/|href=\"/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|src=\"/ai2-docs/|src=\"/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|href=\"/_next/|href=\"/_next/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|src=\"/_next/|src=\"/_next/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|href=\"/content/|href=\"/content/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|src=\"/content/|src=\"/content/|g" {} \;
+          
+      - name: Commit and push
+        run: |
+          cp static_site/index.html .
+          cp static_site/favicon.ico . 2>/dev/null || true
+          cp static_site/sitemap.xml . 2>/dev/null || true
+          cp -r static_site/_next .
+          cp -r static_site/content .
+          cp -r static_site/pagefind .
+          cp static_site/*.css . 2>/dev/null || true
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Sync from ai2-docs build $(date +'%Y-%m-%d %H:%M')" || echo "No changes"
+          git push origin main --force
+
