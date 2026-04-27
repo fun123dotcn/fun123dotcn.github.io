@@ -20,23 +20,26 @@ jobs:
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
           rm -rf artifact.tar static_site
           unzip -o artifact.zip
-          tar -xf artifact.tar
 
       - name: Fix paths for root domain
         run: |
-          find static_site -name "*.html" -type f -exec sed -i 's|href="/ai2-docs/|href="/|g' {} \;
-          find static_site -name "*.html" -type f -exec sed -i 's|src="/ai2-docs/|src="/|g' {} \;
+          find . -name "*.html" -type f -exec sed -i 's|href="/ai2-docs/|href="/|g' {} \;
+          find . -name "*.html" -type f -exec sed -i 's|src="/ai2-docs/|src="/|g' {} \;
 
       - name: Commit and push
         run: |
-          cp static_site/favicon.ico . 2>/dev/null || true
-          cp static_site/logo.png . 2>/dev/null || true
-          cp -r static_site/_next .
-          cp -r static_site/content .
-          cp -r static_site/pagefind .
-          cp static_site/index.html .
+          mkdir -p _next content pagefind
+          cp -r _next_static/* _next/ 2>/dev/null || true
+          cp -r content_static/* content/ 2>/dev/null || true
+          cp -r pagefind_static/* pagefind/ 2>/dev/null || true
+          cp -f _next_static/favicon.ico . 2>/dev/null || true
+          cp -f _next_static/logo.png . 2>/dev/null || true
+          cp -f _next_static/*.ico . 2>/dev/null || true
+          cp -f _next_static/*.png . 2>/dev/null || true
+          cp -f _next_static/*.css . 2>/dev/null || true
+          cp -f index.html . 2>/dev/null || true
           touch .nojekyll
-          rm -rf artifact.zip artifact.tar static_site
+          rm -rf artifact.zip artifact.tar static_site _next_static content_static pagefind_static
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
