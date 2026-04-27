@@ -2,6 +2,9 @@ name: Sync from ai2-docs
 on:
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -17,11 +20,8 @@ jobs:
           
       - name: Get latest ai2-docs build
         run: |
-          gh api repos/fun123dotcn/ai2-docs/actions/runs \
-            --jq ".workflow_runs[0].id" > run_id.txt
-          RUN_ID=$(cat run_id.txt)
-          ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts \
-            --jq ".artifacts[0].id")
+          RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq ".workflow_runs[0].id")
+          ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq ".artifacts[0].id")
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip -o artifact.zip
           unzip -q artifact.zip -d static_site
           
