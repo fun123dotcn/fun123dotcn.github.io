@@ -10,14 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github
-            favicon.ico
-            logo.png
-            .nojekyll
-          sparse-checkout-cone-mode: false
-          
+        
       - name: Download ai2-docs artifact
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,14 +27,14 @@ jobs:
           
       - name: Commit and push
         run: |
-          cp static_site/index.html . 2>/dev/null || true
+          # 保护关键文件
           cp static_site/favicon.ico . 2>/dev/null || true
-          cp -r static_site/_next . 2>/dev/null || true
-          cp -r static_site/content . 2>/dev/null || true
-          cp -r static_site/pagefind . 2>/dev/null || true
+          cp static_site/logo.png . 2>/dev/null || true
+          # 复制所有静态文件（排除已保护的文件）
+          rsync -a --exclude='favicon.ico' --exclude='logo.png' --exclude='.nojekyll' static_site/ .
+          touch .nojekyll
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add -A
-          git commit -m "Sync from ai2-docs $(date)" || echo "No changes"
+          git add -A || true
+          git commit -m "Sync from ai2-docs $(date)" || echo "No changes to commit"
           git push origin main --force
-
