@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download ai2-docs artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq '.workflow_runs[0].id')
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq '.artifacts[0].id')
