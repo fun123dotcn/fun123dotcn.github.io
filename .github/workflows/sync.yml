@@ -12,8 +12,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download ai2-docs artifact
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq '.workflow_runs[0].id')
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq '.artifacts[0].id')
@@ -29,8 +27,6 @@ jobs:
           done
 
       - name: Commit and push
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cp static_site/favicon.ico . 2>/dev/null || true
           cp static_site/logo.png . 2>/dev/null || true
@@ -38,8 +34,6 @@ jobs:
           cp -r static_site/content .
           cp -r static_site/pagefind .
           cp static_site/index.html .
-          cp static_site/*.ico . 2>/dev/null || true
-          cp static_site/*.png . 2>/dev/null || true
           touch .nojekyll
           rm -rf artifact.zip artifact.tar static_site
           git config user.name 'github-actions[bot]'
