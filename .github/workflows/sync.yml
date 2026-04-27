@@ -29,12 +29,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 保护关键文件（如果存在）
           cp static_site/favicon.ico . 2>/dev/null || true
           cp static_site/logo.png . 2>/dev/null || true
-          rsync -a --exclude='favicon.ico' --exclude='logo.png' --exclude='.nojekyll' static_site/ .
+          # 复制所有静态文件
+          cp -r static_site/_next .
+          cp -r static_site/content .
+          cp -r static_site/pagefind .
+          cp static_site/index.html .
+          cp static_site/*.ico . 2>/dev/null || true
+          cp static_site/*.png . 2>/dev/null || true
+          # 确保.nojekyll存在
           touch .nojekyll
+          # 清理临时文件
+          rm -rf artifact.zip artifact.tar static_site
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A || true
+          git add -A
           git commit -m "Sync from ai2-docs $(date)" || echo "No changes"
-          git push origin main --force
+          git push origin main
