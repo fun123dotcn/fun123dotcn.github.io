@@ -2,8 +2,8 @@ name: Sync from ai2-docs
 on:
   workflow_dispatch:
 
-env:
-  GH_TOKEN: ${{ github.token }}
+permissions:
+  contents: write
 
 jobs:
   sync:
@@ -26,15 +26,15 @@ jobs:
           find static_site -name "*.html" -exec sed -i "s|src=\"/ai2-docs/|src=\"/|g" {} \;
           
       - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 保护关键文件
           cp static_site/favicon.ico . 2>/dev/null || true
           cp static_site/logo.png . 2>/dev/null || true
-          # 复制所有静态文件（排除已保护的文件）
           rsync -a --exclude='favicon.ico' --exclude='logo.png' --exclude='.nojekyll' static_site/ .
           touch .nojekyll
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A || true
-          git commit -m "Sync from ai2-docs $(date)" || echo "No changes to commit"
+          git commit -m "Sync from ai2-docs $(date)" || echo "No changes"
           git push origin main --force
