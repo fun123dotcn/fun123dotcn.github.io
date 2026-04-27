@@ -19,10 +19,13 @@ jobs:
           sparse-checkout-cone-mode: false
           
       - name: Download ai2-docs artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq ".workflow_runs[0].id")
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq ".artifacts[0].id")
-          gh run download $RUN_ID --name static_site -D static_site || gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip && unzip -q artifact.zip -d static_site
+          gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
+          unzip -q artifact.zip -d static_site
           
       - name: Fix paths for root domain
         run: |
