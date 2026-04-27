@@ -10,22 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        
+
       - name: Download ai2-docs artifact
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq ".workflow_runs[0].id")
-          ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq ".artifacts[0].id")
+          RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq '.workflow_runs[0].id')
+          ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq '.artifacts[0].id')
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
           rm -rf static_site artifact.tar
           unzip -o artifact.zip -d static_site
-          
+
       - name: Fix paths for root domain
         run: |
-          find static_site -name "*.html" -exec sed -i "s|href="/ai2-docs/|href="/|g" {} \;
-          find static_site -name "*.html" -exec sed -i "s|src="/ai2-docs/|src="/|g" {} \;
-          
+          for f in static_site/*.html; do
+            sed -i 's|href="/ai2-docs/|href="/|g' "$f"
+            sed -i 's|src="/ai2-docs/|src="/|g' "$f"
+          done
+
       - name: Commit and push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,8 +42,8 @@ jobs:
           cp static_site/*.png . 2>/dev/null || true
           touch .nojekyll
           rm -rf artifact.zip artifact.tar static_site
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m "Sync from ai2-docs $(date)" || echo "No changes"
+          git commit -m 'Sync from ai2-docs build' || echo 'No changes'
           git push origin main
