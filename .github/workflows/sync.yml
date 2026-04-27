@@ -18,30 +18,27 @@ jobs:
           RUN_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs --jq ".workflow_runs[0].id")
           ARTIFACT_ID=$(gh api repos/fun123dotcn/ai2-docs/actions/runs/$RUN_ID/artifacts --jq ".artifacts[0].id")
           gh api repos/fun123dotcn/ai2-docs/actions/artifacts/$ARTIFACT_ID/zip > artifact.zip
-          unzip -q artifact.zip -d static_site
+          rm -rf static_site artifact.tar
+          unzip -o artifact.zip -d static_site
           
       - name: Fix paths for root domain
         run: |
-          find static_site -name "*.html" -exec sed -i "s|href=\"/ai2-docs/|href=\"/|g" {} \;
-          find static_site -name "*.html" -exec sed -i "s|src=\"/ai2-docs/|src=\"/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|href="/ai2-docs/|href="/|g" {} \;
+          find static_site -name "*.html" -exec sed -i "s|src="/ai2-docs/|src="/|g" {} \;
           
       - name: Commit and push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 保护关键文件（如果存在）
           cp static_site/favicon.ico . 2>/dev/null || true
           cp static_site/logo.png . 2>/dev/null || true
-          # 复制所有静态文件
           cp -r static_site/_next .
           cp -r static_site/content .
           cp -r static_site/pagefind .
           cp static_site/index.html .
           cp static_site/*.ico . 2>/dev/null || true
           cp static_site/*.png . 2>/dev/null || true
-          # 确保.nojekyll存在
           touch .nojekyll
-          # 清理临时文件
           rm -rf artifact.zip artifact.tar static_site
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
